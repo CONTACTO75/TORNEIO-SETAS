@@ -1,7 +1,7 @@
 "use client";
 import { useLayoutEffect, useRef, useState } from "react";
 import { placeLabel, roundName, type Computed } from "@/lib/bracket";
-import type { ResultRow } from "@/lib/data";
+import { BYE, placeLabel, roundName, type Computed } from "@/lib/bracket";
 
 export type Screen = { key: string; title: string };
 
