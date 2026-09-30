@@ -63,7 +63,7 @@ h3 { font-size: 1.2rem; font-weight: 600; }
 }
 
 main { max-width: 1200px; margin: 0 auto; padding: 36px 20px 80px; }
-.page-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
 .muted { color: var(--ink-2); }
 .small { font-size: .875rem; }
 
@@ -222,3 +222,100 @@ button.mline:hover { border-color: var(--ink); }
   .mbox.ready { border: 1px solid #000; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ---------- Modo TV ---------- */
+.tv {
+  position: fixed; inset: 0; z-index: 100; background: var(--ink); color: #f5f5f2;
+  display: grid; grid-template-rows: auto 1fr; overflow: hidden; font-size: clamp(16px, 1.25vw, 30px);
+}
+.tv-top {
+  display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 2em;
+  padding: .7em 1.4em; position: relative;
+}
+.tv-top::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px;
+  background: repeating-linear-gradient(90deg, var(--red) 0 30px, var(--green) 30px 60px);
+}
+.tv-name { font: 700 1.9em var(--display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tv-clock { font: 600 1.7em var(--display); font-variant-numeric: tabular-nums; }
+.tv-screens { display: flex; gap: .3em; }
+.tv-screens button {
+  font: 600 .8em var(--body); color: #9ea5a0; background: none; border: 1px solid transparent;
+  border-radius: 99px; padding: .35em .9em; cursor: pointer;
+}
+.tv-screens button.on { color: var(--ink); background: #f5f5f2; }
+.tv-screens .tv-ctl { opacity: 0; transition: opacity .2s; border-color: #4c524e; }
+.tv:hover .tv-ctl { opacity: 1; }
+.tv-body { position: relative; min-height: 0; padding: 1.4em 1.6em 1.8em; }
+.tv-center { display: grid; place-content: center; text-align: center; height: 100%; gap: .5em; }
+.tv-big { font: 700 4em var(--display); }
+.tv-sub { color: #9ea5a0; font-size: 1.1em; }
+.tv-h { font: 700 1.7em var(--display); margin: 0 0 .5em; }
+.tv-h3 { font: 600 1.1em var(--body); color: #9ea5a0; margin: 1.2em 0 .4em; }
+
+.tv-jogos { display: grid; grid-template-columns: 1.6fr 1fr; gap: 3em; height: 100%; min-height: 0; }
+.tv-side { border-left: 1px solid #353a37; padding-left: 2.2em; }
+.tv-ready { list-style: none; margin: 0; padding: 0; display: grid; gap: .55em; }
+.tv-ready li {
+  display: grid; grid-template-columns: 2.6em 1fr auto; align-items: center; gap: .9em;
+  background: #f5f5f2; color: var(--ink); border-radius: var(--radius-m); padding: .45em .9em .45em .45em;
+}
+.tv-num {
+  background: var(--red); color: #fff; font: 700 1.5em/1 var(--display); border-radius: var(--radius-s);
+  display: grid; place-items: center; height: 1.7em;
+}
+.tv-players { font: 700 1.75em/1.15 var(--display); display: flex; flex-wrap: wrap; column-gap: .35em; align-items: baseline; }
+.tv-players em { font: 500 .55em var(--body); color: var(--ink-3); font-style: normal; }
+.tv-round { font-size: .8em; color: var(--ink-2); text-align: right; }
+.tv-more { background: none !important; color: #9ea5a0 !important; display: block !important; padding: .2em 0 !important; }
+.tv-next { list-style: none; margin: 0; padding: 0; display: grid; gap: .3em; color: #c9ccc9; }
+.tv-next b { font-family: var(--display); color: #f5f5f2; margin-right: .4em; }
+.tv-results { list-style: none; margin: 0; padding: 0; }
+.tv-results li {
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: .7em; align-items: center;
+  padding: .55em 0; border-bottom: 1px solid #353a37; font: 600 1.25em var(--display); color: #9ea5a0;
+}
+.tv-results li span:last-child { text-align: right; }
+.tv-results .w, .tv-flash .w { color: #f5f5f2; }
+.tv-results b { background: var(--green); color: #fff; padding: .1em .5em; border-radius: var(--radius-s); font-variant-numeric: tabular-nums; }
+
+.tv-fit { position: absolute; inset: 1em 1.4em 1.6em; overflow: hidden; }
+.tv-sisal {
+  background: var(--sisal); background-image: radial-gradient(circle at 1px 1px, var(--sisal-2) 1px, transparent 1.5px);
+  background-size: 7px 7px; border-radius: var(--radius-m); padding: 20px 24px; color: var(--ink);
+}
+
+.tv-champ { display: grid; grid-template-columns: 1.3fr 1fr; gap: 3em; align-items: center; height: 100%; padding: 0 2em; }
+.tv-champ-name {
+  font: 700 clamp(4em, 9vw, 11em)/0.95 var(--display); border-bottom: .08em solid var(--red); padding-bottom: .1em;
+  overflow-wrap: anywhere;
+}
+.tv-podium { list-style: none; margin: 0; padding: 0; font: 600 1.6em var(--display); }
+.tv-podium li { display: grid; grid-template-columns: 4.2em 1fr; padding: .3em 0; border-bottom: 1px solid #353a37; }
+.tv-podium span { color: #9ea5a0; }
+
+.tv-progress {
+  position: fixed; left: 0; bottom: 0; height: 5px; background: var(--red); width: 0;
+  animation-name: tv-progress; animation-timing-function: linear; animation-fill-mode: forwards;
+}
+@keyframes tv-progress { to { width: 100%; } }
+
+/* O momento de destaque: cada resultado novo aparece em grande durante 8 segundos */
+.tv-flash {
+  position: fixed; left: 50%; bottom: 7%; transform: translateX(-50%); z-index: 5;
+  background: var(--green); color: #d4e6dc; border-radius: var(--radius-m); padding: .8em 1.6em 1em;
+  box-shadow: 0 0 0 6px var(--ink), 0 0 0 10px var(--red); min-width: 50%;
+  animation: tv-flash-in .45s cubic-bezier(.2,.9,.3,1.2);
+}
+.tv-flash-label { font-size: .9em; margin-bottom: .2em; }
+.tv-flash-score { display: grid; grid-template-columns: 1fr auto 1fr; gap: .6em; align-items: center; font: 700 2.6em var(--display); }
+.tv-flash-score span:last-child { text-align: right; }
+.tv-flash-score b { background: #f5f5f2; color: var(--ink); padding: 0 .35em; border-radius: var(--radius-s); font-variant-numeric: tabular-nums; }
+@keyframes tv-flash-in { from { transform: translate(-50%, 140%); } }
+
+@media (max-width: 900px) {
+  .tv-jogos, .tv-champ { grid-template-columns: 1fr; overflow: auto; }
+  .tv-side { border-left: 0; padding-left: 0; }
+  .tv-screens { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .tv-progress { display: none; } }

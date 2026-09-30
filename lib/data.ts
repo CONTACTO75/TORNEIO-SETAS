@@ -11,7 +11,7 @@ export interface Tournament {
   status: "draft" | "running" | "finished";
   season_id: string | null; seeds: string[];
 }
-export type ResultRow = Result & { tournament_id: string };
+export type ResultRow = Result & { tournament_id: string; updated_at?: string };
 
 export function useAuth() {
   const [userId, setUserId] = useState<string | null>(null);

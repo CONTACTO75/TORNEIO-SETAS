@@ -107,6 +107,7 @@ export default function TorneioPage() {
           </div>
         </div>
         <div className="row no-print">
+          {t.status !== "draft" && <a className="btn" href={`/torneios/${t.id}/tv`} target="_blank" rel="noreferrer">Modo TV</a>}
           {t.status !== "draft" && <button className="btn ghost" onClick={() => { setTab("arvore"); setTimeout(() => window.print(), 50); }}>Imprimir árvore</button>}
           {isAdmin && t.status !== "draft" && results.length === 0 && (
             <button className="btn ghost" onClick={() => update({ status: "draft" })}>Voltar à preparação</button>

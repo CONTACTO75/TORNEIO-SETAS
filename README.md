@@ -8,6 +8,16 @@ Aplicação web para gerir torneios de dardos: jogadores, ligas com jornadas, e 
 - Resultados em legs; a final pode ter um número de legs diferente.
 - Corrigir um resultado antigo reajusta a árvore e avisa quais os jogos seguintes que ficam anulados.
 - Eliminação dupla com grande final e jogo de desempate "se necessário".
+- **Modo TV** para a televisão do bar (botão na página do torneio, ou `/torneios/ID/tv`).
+
+## Modo TV
+Abra o torneio, clique em **Modo TV** e ponha o navegador da TV em ecrã inteiro (tecla F ou o botão que aparece ao passar o rato).
+- Roda sozinho entre **Jogos** (quem vai ao alvo, próximos jogos e últimos resultados) e a árvore. Em eliminação dupla com 16 ou mais jogadores, os quadros de vencedores e de perdedores aparecem em ecrãs separados para se lerem melhor.
+- Cada resultado novo aparece em destaque durante 8 segundos, assim que é gravado noutro dispositivo.
+- Quando o torneio acaba, o primeiro ecrã passa a mostrar o campeão e os lugares.
+- Tempo por ecrã: acrescente `?s=30` ao endereço (por omissão, 20 segundos).
+- Teclado: setas mudam de ecrã, espaço pausa a rotação.
+- Não precisa de login: pode deixar a TV ligada sem conta de organizador.
 
 Tecnologia: Next.js (Vercel) + Supabase (base de dados, login e tempo real). Os planos gratuitos de ambos chegam bem.
 

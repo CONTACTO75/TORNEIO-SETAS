@@ -8,22 +8,36 @@ interface Props {
   names: Record<string, string>;
   canEdit: boolean;
   onPick?: (m: Match) => void;
+  /** Mostrar só um quadro (útil no modo TV para chaves grandes) */
+  section?: "W" | "L";
+  /** Sem moldura nem scroll: para ser escalado para caber no ecrã */
+  bare?: boolean;
 }
 
-export default function Bracket({ data, names, canEdit, onPick }: Props) {
+export default function Bracket({ data, names, canEdit, onPick, section, bare }: Props) {
   const { structure: st, byId } = data;
   const k = st.rounds;
   const pos: Record<string, { x: number; y: number }> = {};
+  // Rondas só com byes não mostram nada de útil: escondem-se e as colunas encostam
+  const allBye = (sec: string, r: number) => {
+    const ms = data.matches.filter((m) => m.section === sec && m.round === r);
+    return ms.length > 0 && ms.every((m) => m.status === "bye");
+  };
+  let hideW = 0; while (hideW < k - 1 && allBye("W", hideW + 1)) hideW++;
+  let hideL = 0; while (st.format === "double" && hideL < 2 * k - 3 && allBye("L", hideL + 1)) hideL++;
+  const colX = (sec: "W" | "L", r: number) => PADL + (r - 1 - (sec === "W" ? hideW : hideL)) * COL;
+  const hidden = (m: { section: string; round: number }) =>
+    (m.section === "W" && m.round <= hideW) || (m.section === "L" && m.round <= hideL);
 
   // Chave de vencedores
   for (let r = 1; r <= k; r++)
     for (let i = 0; i < st.size / 2 ** r; i++) {
       const y = r === 1 ? HEAD + i * SLOT : (pos[`W${r - 1}-${2 * i}`].y + pos[`W${r - 1}-${2 * i + 1}`].y) / 2;
-      pos[`W${r}-${i}`] = { x: PADL + (r - 1) * COL, y };
+      pos[`W${r}-${i}`] = { x: colX("W", r), y };
     }
   const wbBottom = HEAD + (st.size / 2 - 1) * SLOT + H;
   let height = wbBottom;
-  let width = PADL + k * COL;
+  let width = PADL + (k - hideW) * COL;
   const lbTop = wbBottom + GAP;
 
   if (st.format === "double") {
@@ -35,10 +49,12 @@ export default function Bracket({ data, names, canEdit, onPick }: Props) {
         if (j === 1) y = lbTop + HEAD + i * SLOT;
         else if (j % 2 === 0) y = pos[`L${j - 1}-${i}`].y;
         else y = (pos[`L${j - 1}-${2 * i}`].y + pos[`L${j - 1}-${2 * i + 1}`].y) / 2;
-        pos[`L${j}-${i}`] = { x: PADL + (j - 1) * COL, y };
+        pos[`L${j}-${i}`] = { x: colX("L", j), y };
       }
     }
-    const gx = PADL + Math.max(k, last) * COL;
+    const gx = section === "W" ? PADL + (k - hideW) * COL
+      : section === "L" ? PADL + (last - hideL) * COL
+      : PADL + Math.max(k - hideW, last - hideL) * COL;
     const gy = (pos[`W${k}-0`].y + pos[`L${last}-0`].y) / 2;
     pos.GF1 = { x: gx, y: gy };
     pos.GF2 = { x: gx + COL, y: gy };
@@ -48,10 +64,25 @@ export default function Bracket({ data, names, canEdit, onPick }: Props) {
     width += 60;
   }
 
+  const show = (m: { section: string; round: number }) => !hidden(m) && (!section || st.format !== "double" || m.section === section || m.section === "GF");
+  if (section && st.format === "double") {
+    const last = 2 * k - 2;
+    if (section === "W") {
+      pos.GF1 = { ...pos.GF1, y: pos[`W${k}-0`].y };
+      height = wbBottom;
+    } else {
+      for (const key of Object.keys(pos)) if (key.startsWith("L")) pos[key] = { ...pos[key], y: pos[key].y - lbTop };
+      pos.GF1 = { ...pos.GF1, y: pos[`L${last}-0`].y };
+      height = height - lbTop;
+    }
+    pos.GF2 = { ...pos.GF2, y: pos.GF1.y };
+  }
+  const secTop = (sec: "W" | "L") => (section === "L" ? 0 : sec === "W" ? 0 : lbTop);
+
   // Linhas de ligação (só para quem avança por vitória)
   const lines: string[] = [];
   for (const m of data.matches) {
-    if (!m.winTo) continue;
+    if (!m.winTo || !show(m) || !show(st.byId[m.winTo.match])) continue;
     const a = pos[m.id], b = pos[m.winTo.match];
     const x1 = a.x + W, y1 = a.y + H / 2;
     const x2 = b.x, y2 = b.y + (m.winTo.slot === 0 ? H / 4 : (3 * H) / 4);
@@ -81,7 +112,8 @@ export default function Bracket({ data, names, canEdit, onPick }: Props) {
     const key = `${m.section}${m.round}`;
     if (seen.has(key) || m.section === "GF") continue;
     seen.add(key);
-    titles.push({ x: pos[m.id].x, y: m.section === "W" ? 30 : lbTop + 30, t: roundName(st, m) });
+    if (!show(m)) continue;
+    titles.push({ x: pos[m.id].x, y: secTop(m.section as "W" | "L") + 30, t: roundName(st, m) });
   }
   if (st.format === "double") {
     titles.push({ x: pos.GF1.x, y: pos.GF1.y - 24, t: "Grande final" });
@@ -91,18 +123,18 @@ export default function Bracket({ data, names, canEdit, onPick }: Props) {
   const final = st.format === "double" ? (byId.GF2.status === "done" ? pos.GF2 : pos.GF1) : pos[`W${k}-0`];
 
   return (
-    <div className="bracket-wrap">
+    <div className={bare ? "" : "bracket-wrap"}>
       <div className="bracket" style={{ width, height }}>
         <svg width={width} height={height} style={{ position: "absolute", inset: 0 }} aria-hidden>
           {lines.map((d, i) => <path key={i} d={d} fill="none" stroke="#6f7772" strokeWidth={1.4} />)}
         </svg>
         {st.format === "double" && <>
-          <div className="bsec-title" style={{ left: PADL, top: 0 }}>Quadro de vencedores</div>
-          <div className="bsec-title" style={{ left: PADL, top: lbTop }}>Quadro de perdedores</div>
+          {section !== "L" && <div className="bsec-title" style={{ left: PADL, top: 0 }}>Quadro de vencedores</div>}
+          {section !== "W" && <div className="bsec-title" style={{ left: PADL, top: secTop("L") }}>Quadro de perdedores</div>}
         </>}
         {titles.map((t, i) => <div key={i} className="rtitle" style={{ left: t.x, top: t.y }}>{t.t}</div>)}
         {data.matches.map((m) => {
-          if (m.id === "GF2" && m.status === "skip") return null;
+          if ((m.id === "GF2" && m.status === "skip") || !show(m)) return null;
           const p = pos[m.id];
           const clickable = canEdit && (m.status === "ready" || m.status === "done");
           const Tag = clickable ? "button" : "div";
