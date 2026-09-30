@@ -1,7 +1,7 @@
 "use client";
 import { useLayoutEffect, useRef, useState } from "react";
-import { placeLabel, roundName, type Computed } from "@/lib/bracket";
 import { BYE, placeLabel, roundName, type Computed } from "@/lib/bracket";
+import type { ResultRow } from "@/lib/data";
 
 export type Screen = { key: string; title: string };
 
@@ -28,7 +28,7 @@ export function Jogos({ data, names, results, firstTo }: { data: Computed; names
   const ready = data.matches.filter((m) => m.status === "ready");
   const latest = [...results].sort((a, b) => (b.updated_at! > a.updated_at! ? 1 : -1))
     .map((r) => data.byId[r.match_id]).filter((m) => m && m.status === "done").slice(0, 7);
-    const upcoming = data.matches.filter((m) => m.status === "pending" && (m.p[0] || m.p[1]) && m.p[0] !== BYE && m.p[1] !== BYE && m.id !== "GF2").slice(0, 4);
+  const upcoming = data.matches.filter((m) => m.status === "pending" && (m.p[0] || m.p[1]) && m.p[0] !== BYE && m.p[1] !== BYE && m.id !== "GF2").slice(0, 4);
   return (
     <div className="tv-jogos">
       <section>
