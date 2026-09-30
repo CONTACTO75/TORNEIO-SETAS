@@ -96,7 +96,7 @@ export default function Bracket({ data, names, canEdit, onPick, section, bare }:
 
   const label = (m: Match, s: 0 | 1) => {
     const p = m.p[s];
-    if (p === BYE) return { text: "bye", tbd: true };
+    if (p === BYE) return { text: "", tbd: true };
     if (p) return { text: names[p] ?? "Jogador apagado", tbd: false };
     if (m.id === "GF2") return { text: "Só se necessário", tbd: true };
     const f = m.from[s];
