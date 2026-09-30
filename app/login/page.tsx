@@ -15,7 +15,12 @@ export default function Login() {
     setBusy(true); setError("");
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
-    if (error) setError("Email ou palavra-passe incorretos.");
+    if (error) {
+      const code = (error as { code?: string }).code;
+      if (code === "email_not_confirmed") setError("Este email ainda não foi confirmado. No Supabase, confirme o utilizador (ver README).");
+      else if (code === "invalid_credentials") setError("Email ou palavra-passe incorretos, ou este utilizador não existe no Supabase.");
+      else setError(`Não foi possível entrar: ${error.message}`);
+    }
     else router.push("/");
   };
 
@@ -29,6 +34,9 @@ export default function Login() {
         <label className="field">Palavra-passe<input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" /></label>
         <button className="btn green" disabled={busy}>{busy ? "A entrar…" : "Entrar"}</button>
       </form>
+      <p className="muted small" style={{ marginTop: 12 }}>
+        Projeto Supabase: {(process.env.NEXT_PUBLIC_SUPABASE_URL || "não configurado").replace(/^https?:\/\//, "").split(".")[0]}
+      </p>
     </div>
   );
 }
